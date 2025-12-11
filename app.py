@@ -69,6 +69,7 @@ def handle_webhook():
     """
     try:
         data = request.get_json()
+        logger.info(f"Payload recibido: {data}")  # DEBUG: Ver qué datos llegan realmente
         
         if not data:
             logger.warning("Recibido request sin JSON")
