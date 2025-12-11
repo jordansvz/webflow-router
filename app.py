@@ -29,7 +29,7 @@ SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
 
 import threading
 
-# ... (imports remain the same)
+
 
 def send_email_thread(to_email, form_name, form_data):
     """
@@ -81,8 +81,26 @@ def send_email(to_email, form_name, form_data):
 
 @app.route('/webhook', methods=['POST'])
 def handle_webhook():
-    # ... (rest of the function)
-    # ...
+    """
+    Endpoint para recibir webhooks de Webflow.
+    """
+    try:
+        data = request.get_json()
+        logger.info(f"Payload recibido: {data}")  # DEBUG: Ver qué datos llegan realmente
+        
+        if not data:
+            logger.warning("Recibido request sin JSON")
+            return jsonify({"status": "ignored", "reason": "No JSON data"}), 200
+
+        # Webflow envía los datos anidados en 'payload'
+        payload = data.get('payload', {})
+        form_name = payload.get('name')
+
+        if not form_name:
+            logger.warning("El payload no contiene el nombre del formulario ('name') dentro de 'payload'")
+            # Respondemos 200 para que Webflow no reintente infinitamente si es un formato desconocido
+            return jsonify({"status": "ignored", "reason": "Form name missing"}), 200
+
         # Verificar si el formulario está en nuestra configuración
         if form_name in FORM_CONFIG:
             target_email = FORM_CONFIG[form_name]
