@@ -75,12 +75,12 @@ def handle_webhook():
             logger.warning("Recibido request sin JSON")
             return jsonify({"status": "ignored", "reason": "No JSON data"}), 200
 
-        # Webflow envía el nombre del formulario en la propiedad 'name' (a veces 'formName' en versiones viejas, 
-        # pero el usuario especificó data['name'])
-        form_name = data.get('name') or data.get('formName')
+        # Webflow envía los datos anidados en 'payload'
+        payload = data.get('payload', {})
+        form_name = payload.get('name')
 
         if not form_name:
-            logger.warning("El payload no contiene el nombre del formulario ('name')")
+            logger.warning("El payload no contiene el nombre del formulario ('name') dentro de 'payload'")
             # Respondemos 200 para que Webflow no reintente infinitamente si es un formato desconocido
             return jsonify({"status": "ignored", "reason": "Form name missing"}), 200
 
@@ -89,8 +89,11 @@ def handle_webhook():
             target_email = FORM_CONFIG[form_name]
             logger.info(f"Procesando formulario: {form_name} -> Enviando a {target_email}")
             
+            # Extraer los datos reales del formulario
+            form_data = payload.get('data', {})
+            
             # Enviar el correo
-            send_email(target_email, form_name, data)
+            send_email(target_email, form_name, form_data)
             
             return jsonify({"status": "success", "message": "Email sent"}), 200
         else:
