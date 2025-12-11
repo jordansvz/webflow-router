@@ -23,7 +23,7 @@ FORM_CONFIG = {
 
 # Configuración SMTP desde Variables de Entorno
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
-SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+SMTP_PORT = int(os.environ.get('SMTP_PORT', 465))
 SMTP_USER = os.environ.get('SMTP_USER')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
 
@@ -55,9 +55,13 @@ def send_email_thread(to_email, form_name, form_data):
         msg.attach(MIMEText(body, 'plain'))
 
         # Conexión SMTP
-        logger.info("Conectando al servidor SMTP...")
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls() # Encriptación TLS
+        logger.info(f"Conectando al servidor SMTP {SMTP_SERVER}:{SMTP_PORT}...")
+        
+        if SMTP_PORT == 465:
+            server = smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT)
+        else:
+            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+            server.starttls() # Encriptación TLS
         
         logger.info("Iniciando sesión SMTP...")
         server.login(SMTP_USER, SMTP_PASSWORD)
