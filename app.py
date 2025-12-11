@@ -15,9 +15,9 @@ app = Flask(__name__)
 # Diccionario de mapeo: 'Nombre del Formulario en Webflow': 'email_destino@empresa.com'
 # Puedes agregar más formularios aquí fácilmente.
 FORM_CONFIG = {
-    'Contact Form': 'ventas@miempresa.com',
-    'Support Ticket': 'soporte@miempresa.com',
-    'Newsletter Signup': 'marketing@miempresa.com',
+    'Contact Form': 'jordan.svz1@gmail.com',
+    'Support Ticket': 'esveidi.esveidi@gmail.com',
+    'Newsletter Signup': 'jordy.queno@gmail.com',
     # 'Nombre Exacto en Webflow': 'email@destino.com'
 }
 
